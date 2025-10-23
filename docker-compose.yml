@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Frontend Service (This Web App)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8084:80" # Map host port 8084 to container port 80
+    depends_on:
+      - backend
+      - mqtt
+    restart: unless-stopped
+
+  # Backend Service (Python Cat Detector)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      # Mount the cat_detections folder to persist saved images on your host machine
+      - ./cat_detections:/app/cat_detections
+    depends_on:
+      - mqtt
+    restart: unless-stopped
+
+  # MQTT Broker Service (Mosquitto)
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    ports:
+      - "1883:1883"   # Standard MQTT port for the Python script
+      - "9001:9001"   # WebSocket port for the frontend app
+    volumes:
+      - ./mqtt/config:/mosquitto/config
+      - ./mqtt/data:/mosquitto/data
+      - ./mqtt/log:/mosquitto/log
+    # Command to start the broker with our custom config file
+    command: mosquitto -c /mosquitto/config/mosquitto.conf
+    restart: unless-stopped

@@ -1,0 +1,5 @@
+{
+  "name": "Cat Detector Companion App",
+  "description": "A web-based dashboard to monitor a Wi-Fi camera stream, control a servo, and configure a cat detection system in real-time. This app connects to an MQTT broker to receive live video frames and detection statuses, and to send control commands and configuration updates.",
+  "requestFramePermissions": []
+}
